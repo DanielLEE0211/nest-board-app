@@ -3,6 +3,7 @@ import { BoardsService } from './boards.service';
 import {Board, BoardStatus} from './board.model';
 import { createBoardDto } from './dto/create-board.dto';
 import { create } from 'domain';
+import { BoardStatusValidationPipe } from './pipes/board-status-validation.pipe';
 
 @Controller('boards')
 export class BoardsController {
@@ -19,20 +20,6 @@ export class BoardsController {
         return this.boardsService.getBoardById(id);
     }
 
-    @Patch('/:id/status')
-    updateBoardStatus(
-        @Param('id') id: string,
-        @Body('status') status: BoardStatus
-    ){
-        return this.boardsService.updateBoardStatus(id, status)
-    }
-
-    @Delete('/:id')
-    deleteBoard(@Param('id') id: string): void{
-        this.boardsService.deleteBoard(id);
-    }
-    
-
     @Post()
     @UsePipes(ValidationPipe)
     createBoard(
@@ -40,4 +27,18 @@ export class BoardsController {
     ): Board {
         return this.boardsService.createBoard(createBoardDto)
     }
+
+    @Delete('/:id')
+    deleteBoard(@Param('id') id: string): void{
+        this.boardsService.deleteBoard(id);
+    }
+
+    @Patch('/:id/status')
+    updateBoardStatus(
+        @Param('id') id: string,
+        @Body('status', BoardStatusValidationPipe) status: BoardStatus
+    ){
+        return this.boardsService.updateBoardStatus(id, status)
+    }
+    
 }
